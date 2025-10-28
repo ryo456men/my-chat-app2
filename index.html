@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1">
+	<title>Nezumiya — Private Chat</title>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+	<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+	<!-- Bootstrap CSS -->
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-3g5YkYvGBc7r6w1KqzYQ5V4x9wq8k2nJ5V+8VgT1qK2P1kQ7Z0jK2y4v6Q8bY3sB" crossorigin="anonymous">
+	<link rel="stylesheet" href="about.css">
+	<style>main{padding-top:72px;} .logo-text{font-size:20px}</style>
+</head>
+<body>
+		<nav class="navbar navbar-expand-lg navbar-dark bg-primary custom-navbar">
+			<div class="container-fluid">
+				<a class="navbar-brand d-flex align-items-center" href="#">
+					<div class="logo me-2"><span class="logo-text">Nezumiya</span></div>
+				</a>
+				<form class="d-none d-md-flex ms-3 me-auto w-50">
+					<input class="form-control form-control-sm" type="search" placeholder="Search Nezumiya" aria-label="Search">
+				</form>
+				<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#siteNav" aria-controls="siteNav" aria-expanded="false" aria-label="Toggle navigation">
+					<span class="navbar-toggler-icon"></span>
+				</button>
+				<div class="collapse navbar-collapse" id="siteNav">
+						<li class="nav-item me-2"><a class="nav-link" href="#" data-section="home"><i class="fas fa-home"></i></a></li>
+						<li class="nav-item me-2"><a class="nav-link" href="#" data-section="home"><i class="fas fa-user-friends"></i></a></li>
+						<li class="nav-item me-2"><a class="nav-link" href="#" data-section="chat"><i class="fas fa-comment-dots"></i></a></li>
+						<li class="nav-item me-2"><a class="nav-link" href="#" data-section="home"><i class="fas fa-bell"></i></a></li>
+						<li class="nav-item dropdown">
+							<a class="nav-link dropdown-toggle" href="#" id="profileDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+								<img src="" alt="avatar" class="rounded-circle" style="width:28px;height:28px;background:linear-gradient(45deg,#ffd6f2,#ffdede)">
+							</a>
+							<ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
+								<li><a id="settingsBtn" class="dropdown-item" href="#">Settings</a></li>
+								<li><a id="logoutBtn" class="dropdown-item" href="#">Logout</a></li>
+							</ul>
+						</li>
+					</ul>
+				</div>
+			</div>
+		</nav>
+
+		<div class="mobile-nav" id="mobileNav" aria-hidden="true">
+			<div class="menu">
+				<button id="closeMenu" class="small-btn" style="margin-bottom:12px">Close</button>
+				<nav>
+					<ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:10px">
+						<li><a href="#" data-section="home" class="menu-link">Home</a></li>
+						<li><a href="#" data-section="chat" class="menu-link">Chat</a></li>
+					</ul>
+				</nav>
+			</div>
+		</div>
+
+		<main class="container-fluid mt-3">
+			<div class="row gx-4">
+				<!-- Left sidebar -->
+				<aside class="col-lg-3 d-none d-lg-block left-sidebar">
+					<div class="card mb-3 p-3">
+						<div class="d-flex align-items-center gap-3">
+							<div class="avatar-lg" style="width:56px;height:56px;border-radius:50%;background:linear-gradient(45deg,#ffd6f2,#ffdede)"></div>
+							<div>
+								<div id="profileName">Your Name</div>
+								<div class="text-muted small">View profile</div>
+							</div>
+						</div>
+						<hr>
+						<ul class="list-unstyled small">
+							<li class="mb-2"><a href="#" data-section="home" class="text-decoration-none text-dark"><i class="fas fa-user me-2 text-primary"></i>Friends</a></li>
+							<li class="mb-2"><a href="#" data-section="home" class="text-decoration-none text-dark"><i class="fas fa-users me-2 text-primary"></i>Groups</a></li>
+							<li class="mb-2"><a href="#" data-section="home" class="text-decoration-none text-dark"><i class="fas fa-bookmark me-2 text-primary"></i>Saved</a></li>
+						</ul>
+					</div>
+				</aside>
+				<!-- Main feed -->
+				<section id="feedColumn" class="col-12 col-lg-6">
+					<div class="card mb-3 p-3">
+						<div class="mb-3">
+							<textarea id="postInput" class="form-control" rows="3" placeholder="What's on your mind?"></textarea>
+							<div class="d-flex justify-content-between mt-2">
+								<div>
+									<button class="btn btn-sm btn-light me-1">Photo</button>
+									<button class="btn btn-sm btn-light me-1">Video</button>
+									<button class="btn btn-sm btn-light">Feeling</button>
+								</div>
+								<button id="postBtn" class="btn btn-primary btn-sm">Post</button>
+							</div>
+						</div>
+					</div>
+					<!-- Example posts -->
+					<div id="feedList">
+					<div class="post-card card mb-3">
+						<div class="card-body">
+							<div class="d-flex align-items-center mb-2">
+								<div class="avatar-sm me-2" style="width:40px;height:40px;border-radius:50%;background:linear-gradient(45deg,#ffd6f2,#ffdede)"></div>
+								<div>
+									<div class="fw-bold">Partner A</div>
+									<div class="text-muted small">2 hrs</div>
+								</div>
+							</div>
+							<p>Hey everyone — testing the new Nezumiya feed UI!</p>
+							<img src="" alt="" class="img-fluid rounded mb-2" style="background:#eee;height:180px;width:100%">
+							<div class="d-flex gap-3 small text-muted">
+								<div><i class="fas fa-thumbs-up me-1"></i>Like</div>
+								<div><i class="fas fa-comment me-1"></i>Comment</div>
+								<div><i class="fas fa-share me-1"></i>Share</div>
+							</div>
+						</div>
+					</div>
+					</div>
+				</section>
+				<!-- Right sidebar (includes chat) -->
+				<aside class="col-lg-3 right-sidebar">
+					<div class="card mb-3 p-3">
+						<div class="fw-bold mb-2">Contacts</div>
+						<ul class="list-unstyled small">
+							<li class="mb-2">Alice</li>
+							<li class="mb-2">Bob</li>
+							<li class="mb-2">Carol</li>
+						</ul>
+					</div>
+					<!-- Chat card (preserve existing IDs) -->
+					<div class="card p-3">
+						<div class="fw-bold mb-2">Messages</div>
+						<div id="chatWindow" class="chat-window mb-2" aria-live="polite" style="max-height:220px;overflow:auto"></div>
+						<form id="messageForm" class="d-flex" autocomplete="off">
+							<select id="senderSelect" class="form-select form-select-sm me-2" style="width:90px;">
+								<option value="A">A</option>
+								<option value="B">B</option>
+							</select>
+							<input id="messageInput" type="text" class="form-control form-control-sm me-2" placeholder="Message...">
+							<button type="submit" id="sendBtn" class="btn btn-primary btn-sm">Send</button>
+						</form>
+					</div>
+				</aside>
+			</div>
+		</main>
+
+	<footer id="site-footer">
+		<small>Private chat — messages stored per room on the server.</small>
+		<div id="conn-wrap" aria-live="polite"><span id="conn-status" class="conn-connecting">Connecting…</span></div>
+	</footer>
+
+		<!-- Bootstrap JS bundle (includes Popper) -->
+		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-ENjdO4Dr2bkBIFxQpeoYj1yYkU6s5vYQ2f3Zl5q5b5Q5nQ5s" crossorigin="anonymous"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.8.1/socket.io.min.js"></script>
+		<script src="about.js"></script>
+</body>
+</html>
