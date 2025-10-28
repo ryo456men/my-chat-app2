@@ -123,7 +123,18 @@
 					</div>
 					<!-- Chat card (preserve existing IDs) -->
 					<div class="card p-3">
-						<div class="fw-bold mb-2">Messages</div>
+						<div class="d-flex justify-content-between align-items-center mb-2">
+							<div class="fw-bold">Messages</div>
+							<div class="btn-group">
+								<button id="newRoomBtn" class="btn btn-sm btn-outline-primary">New room</button>
+								<button id="copyLinkBtn" class="btn btn-sm btn-outline-secondary">Share room</button>
+							</div>
+						</div>
+						<div class="mb-2 small text-muted">Room: <span id="roomId">default</span> • Users: <span id="userCount">0</span></div>
+						<div id="passwordSection" class="hidden mb-2">
+							<input type="password" id="roomPassword" placeholder="Room password" class="form-control mb-2">
+							<button id="joinRoom" class="btn btn-sm btn-success">Join</button>
+						</div>
 						<div id="chatWindow" class="chat-window mb-2" aria-live="polite" style="max-height:220px;overflow:auto"></div>
 						<form id="messageForm" class="d-flex" autocomplete="off">
 							<select id="senderSelect" class="form-select form-select-sm me-2" style="width:90px;">

@@ -314,6 +314,8 @@ html, body {
 .message-form .danger { background: #ff6b6b; }
 
 .visually-hidden { position: absolute !important; height: 1px; width:1px; overflow:hidden; clip:rect(1px,1px,1px,1px); white-space:nowrap; }
+/* utility to hide elements (used by JS to toggle password input etc.) */
+.hidden { display: none !important; }
 @media (max-width:900px) {
     .chat-section .chat-wrapper { flex-direction:column; padding:12px; }
     .profiles { width:100%; flex-direction:row; justify-content:space-between; }
