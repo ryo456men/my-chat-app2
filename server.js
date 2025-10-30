@@ -6,6 +6,25 @@ const path = require('path');
 
 app.use(express.static(__dirname));
 
+// Simple HTTP JSON endpoints for quick verification/debugging
+app.get('/api/profiles', (req, res) => {
+    db.all('SELECT id, name, data FROM profiles', (e, rows) => {
+        if (e) return res.status(500).json({ error: 'db_error' });
+        try {
+            const out = (rows || []).map(r => { try { return JSON.parse(r.data); } catch (ex) { return { id: r.id, name: r.name }; } });
+            res.json(out);
+        } catch (err) { res.status(500).json({ error: 'parse_error' }); }
+    });
+});
+
+app.get('/api/posts', (req, res) => {
+    db.all('SELECT id, author_id, author_name, text, ts FROM posts ORDER BY ts DESC LIMIT 200', (e, rows) => {
+        if (e) return res.status(500).json({ error: 'db_error' });
+        const out = (rows || []).map(r => ({ id: r.id, author: { id: r.author_id, name: r.author_name }, text: r.text, ts: r.ts }));
+        res.json(out);
+    });
+});
+
 // Persistence: prefer SQLite for durability. We still keep 'data/rooms.json' as a migration source.
 const fs = require('fs');
 const dataDir = path.join(__dirname, 'data');
@@ -199,12 +218,30 @@ io.on('connection', (socket) => {
 
     // Profiles: create and list
     socket.on('create_profile', (profile, cb) => {
-        if (!profile || !profile.id) {
-            if (cb) cb({ error: 'invalid_profile' });
+        // Basic server-side validation for safety
+        if (!profile || !profile.id || !profile.name) {
+            if (cb) cb({ error: 'invalid_profile', reason: 'missing id or name' });
             return;
         }
-        const data = JSON.stringify(profile || {});
-        db.run('INSERT OR REPLACE INTO profiles (id, name, data) VALUES (?, ?, ?)', [profile.id, profile.name || '', data], (err) => {
+        // enforce bio length
+        if (profile.bio && String(profile.bio).length > 280) {
+            if (cb) cb({ error: 'invalid_profile', reason: 'bio_too_long' });
+            return;
+        }
+        // validate avatar URL if present (simple http/https check)
+        if (profile.avatar && !/^https?:\/\//i.test(profile.avatar)) {
+            if (cb) cb({ error: 'invalid_profile', reason: 'invalid_avatar_url' });
+            return;
+        }
+
+        const safeProfile = {
+            id: String(profile.id),
+            name: String(profile.name),
+            avatar: profile.avatar || '',
+            bio: profile.bio || ''
+        };
+        const data = JSON.stringify(safeProfile);
+        db.run('INSERT OR REPLACE INTO profiles (id, name, data) VALUES (?, ?, ?)', [safeProfile.id, safeProfile.name || '', data], (err) => {
             if (err) {
                 console.error('failed to save profile', err);
                 if (cb) cb({ error: 'db_error' });
@@ -215,7 +252,7 @@ io.on('connection', (socket) => {
                 if (e) { if (cb) cb({ error: 'db_error' }); return; }
                 const out = (rows || []).map(r => { try { return JSON.parse(r.data); } catch (ex) { return { id: r.id, name: r.name }; } });
                 io.emit('profiles', out);
-                if (cb) cb({ ok: true, profile });
+                if (cb) cb({ ok: true, profile: safeProfile });
             });
         });
     });
