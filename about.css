@@ -1,16 +1,17 @@
 :root {
     --white: #ffffff;
-    --primary: #1877F2; /* Facebook-like blue */
-    --accent: #2D88FF;
-    --text: #1c1e21;
-    --bg-dark: #0b1a2b;
-    --card-bg: rgba(24, 119, 242, 0.06);
-    --gradient: linear-gradient(135deg, #1877F2 0%, #2D88FF 100%);
+    --black: #0b0b0b;
+    --muted: #f2f2f2;
+    --text: #111111;
+    --header-bg: #0b0b0b;
+    --bubble-sent: #000000;
+    --bubble-recv: #f5f5f7;
+    --shadow: 0 6px 18px rgba(0,0,0,0.08);
 }
 
 body {
     font-family: 'Segoe UI', Arial, sans-serif;
-    background: #f7f7f7;
+    background: var(--white);
     color: var(--text);
     margin: 0;
 }
@@ -44,7 +45,7 @@ html, body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background: var(--primary);
+    background: var(--header-bg);
     padding: 10px 16px;
     position: sticky; /* keep visible when scrolling */
     top: 0;
@@ -137,6 +138,19 @@ html, body {
 }
 .hamburger i { color: #fff; font-size: 20px; }
 
+/* Buttons: prefer the blue theme */
+.btn-primary {
+    background: var(--black) !important;
+    border-color: var(--black) !important;
+    color: #fff !important;
+}
+.btn-primary:hover { background: #111 !important; border-color: #111 !important; }
+
+/* Login overlay form tweaks */
+#loginOverlay input.form-control { border-radius: 8px; }
+#loginOverlay .btn-primary { min-width:110px; }
+#loginOverlay .btn-light { background:#f1f3f5; }
+
 /* Off-canvas mobile nav */
 .mobile-nav {
     position: fixed;
@@ -211,7 +225,7 @@ html, body {
 
 
  footer {
-            background: #2C1810;
+            background: var(--header-bg);
             color: #fff;
             padding:60px 0 30px;
         }
@@ -298,13 +312,17 @@ html, body {
 
 .chat-box { flex:1; display:flex; flex-direction:column; gap:12px; }
 .chat-window { background: var(--white); border-radius:12px; padding:16px; min-height:320px; max-height:58vh; overflow:auto; box-shadow: 0 6px 18px rgba(12,12,12,0.06); }
-.message { display:flex; margin:8px 0; gap:8px; align-items:flex-end; }
-.message .bubble { padding:10px 14px; border-radius:14px; background:#f2f2f2; max-width:70%; word-wrap:break-word; }
+.message { display:flex; margin:10px 0; gap:8px; align-items:flex-end; }
+.message .bubble { padding:10px 14px; border-radius:18px; max-width:76%; word-wrap:break-word; box-shadow: 0 2px 6px rgba(0,0,0,0.06); }
 .message.A { justify-content:flex-start; }
-.message.A .bubble { background: linear-gradient(90deg,#fff 0,#f0f0f0); }
+.message.A .bubble { background: var(--bubble-recv); color: var(--text); border-top-left-radius:4px; }
 .message.B { justify-content:flex-end; }
-.message.B .bubble { background: linear-gradient(90deg,#ffd6e8,#ff9fc3); color:#1a1a1a; }
+.message.B .bubble { background: var(--bubble-sent); color: #fff; border-top-right-radius:4px; }
 .message .meta { font-size:11px; color:#777; margin-top:6px; }
+.message-input-wrap { position: sticky; bottom: 0; background: transparent; padding-top:8px; }
+.message-form { display:flex; gap:8px; align-items:center; }
+.message-form input { padding:12px 14px; border-radius:20px; border:1px solid #e6e6e6; background: #fff; box-shadow: 0 2px 6px rgba(0,0,0,0.04); }
+.message-form button { padding:10px 14px; border-radius:20px; border:0; background:var(--black); color:#fff; cursor:pointer; }
 
 .message-form { display:flex; gap:8px; align-items:center; }
 .message-form select, .message-form input { padding:10px; border-radius:8px; border:1px solid #e6e6e6; }
@@ -324,6 +342,7 @@ html, body {
 /* Left sidebar and feed styles */
 .left-sidebar .card { background: #fff; border-radius:12px; }
 .avatar-lg { display:inline-block }
+.avatar-lg { width:56px;height:56px;border-radius:50%;background:linear-gradient(45deg,#ffd6f2,#ffdede);background-size:cover;background-position:center }
 .feed .post-card .card-body img { object-fit:cover }
 .post-card .card-body .avatar-sm { flex: 0 0 40px }
 
