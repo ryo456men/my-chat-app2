@@ -527,22 +527,81 @@ window.onload = function () {
     });
 
     // Save profile handler
+    // avatar preview validation state
+    let avatarValid = true;
+    function setAvatarPreviewState(ok, url) {
+        const preview = document.getElementById('profileAvatarPreview');
+        const msg = document.getElementById('profileAvatarMsg');
+        if (!preview || !msg) return;
+        if (ok && url) {
+            preview.style.backgroundImage = `url('${url}')`;
+            msg.textContent = 'Preview';
+            msg.classList.remove('text-danger');
+            msg.classList.add('text-muted');
+            avatarValid = true;
+        } else if (!url) {
+            preview.style.backgroundImage = '';
+            msg.textContent = 'Paste an image URL to preview';
+            msg.classList.remove('text-danger');
+            msg.classList.add('text-muted');
+            avatarValid = true;
+        } else {
+            preview.style.backgroundImage = '';
+            msg.textContent = 'Could not load image';
+            msg.classList.remove('text-muted');
+            msg.classList.add('text-danger');
+            avatarValid = false;
+        }
+    }
+
+    // profile avatar input: attempt to load image to confirm validity
+    profileAvatarInput?.addEventListener('input', () => {
+        const url = profileAvatarInput.value && profileAvatarInput.value.trim();
+        if (!url) { setAvatarPreviewState(true, null); return; }
+        // quick check: must be http/https
+        if (!/^https?:\/\/.+/i.test(url)) { setAvatarPreviewState(false, null); return; }
+        // attempt to load image
+        const img = new Image();
+        let settled = false;
+        img.onload = () => { if (settled) return; settled = true; setAvatarPreviewState(true, url); };
+        img.onerror = () => { if (settled) return; settled = true; setAvatarPreviewState(false, null); };
+        img.src = url;
+        // timeout fallback
+        setTimeout(() => { if (!settled) { settled = true; setAvatarPreviewState(false, null); } }, 3500);
+    });
+
+    // bio char counter
+    profileBioInput?.addEventListener('input', () => {
+        const el = document.getElementById('bioCounter');
+        if (!el) return;
+        const len = profileBioInput.value ? profileBioInput.value.length : 0;
+        el.textContent = `${len} / 280`;
+        if (len > 280) el.classList.add('text-danger'); else el.classList.remove('text-danger');
+    });
+
     saveProfileBtn?.addEventListener('click', () => {
         const name = profileNameInput?.value && profileNameInput.value.trim();
         if (!name) { alert('Please enter a display name'); return; }
         const id = profileIdInput?.value && profileIdInput.value.trim() || genId(8);
         const avatar = profileAvatarInput?.value && profileAvatarInput.value.trim();
         const bio = profileBioInput?.value && profileBioInput.value.trim();
-        const profile = { id, name, avatar, bio };
+        // validations
+        if (bio && bio.length > 280) { alert('Bio must be 280 characters or less'); return; }
+        if (avatar && !avatarValid) { alert('Avatar URL is invalid or could not be loaded. Please fix or clear the URL.'); return; }
+        const profile = { id, name, avatar: avatar || '', bio: bio || '' };
         // keep the full profile object as currentUser
         currentUser = profile;
         // update UI
         if (profileNameEl) profileNameEl.textContent = name;
-        if (document.querySelector('.avatar-lg') && avatar) {
+        if (document.querySelector('.avatar-lg')) {
             const el = document.querySelector('.avatar-lg');
-            el.style.backgroundImage = `url('${avatar}')`;
-            el.style.backgroundSize = 'cover';
-            el.style.backgroundPosition = 'center';
+            if (avatar) {
+                el.style.backgroundImage = `url('${avatar}')`;
+                el.style.backgroundSize = 'cover';
+                el.style.backgroundPosition = 'center';
+            } else {
+                el.style.backgroundImage = '';
+            }
         }
         // persist locally and to server
         saveLocalProfile(profile);
@@ -551,6 +610,18 @@ window.onload = function () {
         if (profileModal) profileModal.hide();
         else profileModalEl && (profileModalEl.style.display = 'none');
     });
+
+    // initialize preview when modal opens
+    if (profileModalEl) {
+        profileModalEl.addEventListener('show.bs.modal', () => {
+            const p = currentUser || {};
+            if (profileAvatarInput) profileAvatarInput.value = p.avatar || '';
+            if (profileBioInput) profileBioInput.value = p.bio || '';
+            const evt = new Event('input');
+            profileAvatarInput && profileAvatarInput.dispatchEvent(evt);
+            profileBioInput && profileBioInput.dispatchEvent(evt);
+        });
+    }
 
     // --- Simple feed interactions (post creation, like/comment UI) ---
     const postInput = document.getElementById('postInput');
