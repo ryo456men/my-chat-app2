@@ -413,6 +413,56 @@ window.onload = function () {
         if (id) showSection(id);
     }));
 
+    // Top search (lookup user by id)
+    const topSearch = document.getElementById('topSearch');
+    const searchResult = document.getElementById('searchResult');
+    const topSearchForm = document.getElementById('topSearchForm');
+    function clearSearchResult() { if (!searchResult) return; searchResult.innerHTML = ''; searchResult.style.display = 'none'; }
+
+    async function doSearch(id) {
+        clearSearchResult();
+        if (!id || !id.trim()) return;
+        const q = id.trim();
+        try {
+            const res = await fetch('/api/profiles/' + encodeURIComponent(q));
+            if (res.status === 404) {
+                const li = document.createElement('div'); li.className = 'list-group-item small text-muted'; li.textContent = 'User not found';
+                searchResult.appendChild(li); searchResult.style.display = 'block'; return;
+            }
+            if (!res.ok) { const li = document.createElement('div'); li.className = 'list-group-item small text-danger'; li.textContent = 'Error searching'; searchResult.appendChild(li); searchResult.style.display='block'; return; }
+            const profile = await res.json();
+            const item = document.createElement('div'); item.className = 'list-group-item d-flex justify-content-between align-items-center';
+            const left = document.createElement('div'); left.innerHTML = `<div class="fw-bold">${profile.name || profile.id}</div><div class="small text-muted">@${profile.id}</div>`;
+            const right = document.createElement('div');
+            const viewBtn = document.createElement('button'); viewBtn.className = 'btn btn-sm btn-outline-primary me-2'; viewBtn.textContent = 'View';
+            viewBtn.addEventListener('click', (e) => { e.preventDefault(); clearSearchResult(); renderProfile(profile); showProfileSection(); });
+            const dmBtn = document.createElement('button'); dmBtn.className = 'btn btn-sm btn-primary'; dmBtn.textContent = 'Message';
+            dmBtn.addEventListener('click', (e) => {
+                e.preventDefault(); clearSearchResult();
+                if (!currentUser || !currentUser.id) { alert('Please log in first'); return; }
+                if (!hasSocket) { alert('No socket connection'); return; }
+                socket.emit('start_dm', { from: currentUser, to: profile }, (res) => {
+                    if (res && res.room) {
+                        currentRoom = res.room; if (roomLabel) roomLabel.textContent = currentRoom; socket.emit('join', { profile: currentUser, room: currentRoom });
+                        showSection('chat'); const url = window.location.origin + window.location.pathname + '?room=' + encodeURIComponent(currentRoom); window.history.replaceState({}, '', url);
+                    } else alert('Failed to create DM');
+                });
+            });
+            right.appendChild(viewBtn); right.appendChild(dmBtn);
+            item.appendChild(left); item.appendChild(right);
+            searchResult.appendChild(item); searchResult.style.display = 'block';
+        } catch (err) {
+            const li = document.createElement('div'); li.className = 'list-group-item small text-danger'; li.textContent = 'Search failed'; searchResult.appendChild(li); searchResult.style.display='block';
+        }
+    }
+
+    topSearch?.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') { e.preventDefault(); doSearch(topSearch.value); }
+        if (e.key === 'Escape') { clearSearchResult(); }
+    });
+    // click outside to close
+    document.addEventListener('click', (e) => { if (!topSearchForm) return; if (!topSearchForm.contains(e.target)) clearSearchResult(); });
+
     // Profile page navigation
     const viewProfileLink = document.getElementById('viewProfileLink');
     const profileSection = document.getElementById('profile');

@@ -341,3 +341,19 @@ http.listen(PORT, '0.0.0.0', () => {
     console.log(`1. Find your IP address by running 'ipconfig' in a new terminal`);
     console.log(`2. Use http://YOUR_IP:${PORT} (replace YOUR_IP with your IPv4 address)`);
 });
+
+// lookup single profile by id
+app.get('/api/profiles/:id', (req, res) => {
+    const id = String(req.params.id || '').trim();
+    if (!id) return res.status(400).json({ error: 'missing_id' });
+    db.get('SELECT id, name, data FROM profiles WHERE id = ?', [id], (e, row) => {
+        if (e) return res.status(500).json({ error: 'db_error' });
+        if (!row) return res.status(404).json({ error: 'not_found' });
+        try {
+            const parsed = JSON.parse(row.data);
+            return res.json(parsed);
+        } catch (ex) {
+            return res.json({ id: row.id, name: row.name });
+        }
+    });
+});

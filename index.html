@@ -36,8 +36,9 @@
 				<a class="navbar-brand d-flex align-items-center" href="#">
 					<div class="logo me-2"><span class="logo-text">Nezumiya</span></div>
 				</a>
-				<form class="d-none d-md-flex ms-3 me-auto w-50">
-					<input class="form-control form-control-sm" type="search" placeholder="Search Nezumiya" aria-label="Search">
+				<form id="topSearchForm" class="d-none d-md-flex ms-3 me-auto w-50 position-relative" onsubmit="return false;">
+					<input id="topSearch" class="form-control form-control-sm" type="search" placeholder="Search by user id (e.g. abc123)" aria-label="Search">
+					<div id="searchResult" class="list-group position-absolute" style="top:40px;left:0;right:0;display:none;z-index:2200"></div>
 				</form>
 				<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#siteNav" aria-controls="siteNav" aria-expanded="false" aria-label="Toggle navigation">
 					<span class="navbar-toggler-icon"></span>
